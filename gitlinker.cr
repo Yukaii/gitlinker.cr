@@ -5,7 +5,11 @@ def git_command(args)
   process = Process.new("git", args, output: stdout, chdir: get_git_root)
 
   status = process.wait
-  stdout.to_s.strip
+  if status.success?
+    stdout.to_s.strip
+  else
+    nil
+  end
 end
 
 def get_git_root
@@ -24,4 +28,12 @@ def get_rev_name(rev)
   git_command ["rev-parse", "--abbrev-ref", rev]
 end
 
-puts get_rev_name "@{u}"
+def get_rev(rev)
+  git_command ["rev-parse", rev]
+end
+
+def is_file_in_rev(file, revspec)
+  output = git_command ["cat-file", "-e", "#{revspec}:#{file}"]
+  !output.nil?
+end
+
