@@ -37,3 +37,20 @@ def is_file_in_rev(file, revspec)
   !output.nil?
 end
 
+def has_file_changed(file, rev)
+  !(git_command ["diff", rev, "--", file]).nil?
+end
+
+def is_rev_in_remote(revspec, remote)
+  raise "remote required" if !remote
+
+  raw_branches = git_command ["branch", "--remotes", "--contains", revspec]
+
+  if raw_branches.nil?
+    return false
+  end
+
+  branches = raw_branches.split("\n").map { |i| i.strip }
+  branches.any? { |b| Regex.new(remote).match(b) }
+end
+
