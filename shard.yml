@@ -1,2 +1,13 @@
-name: gitlinker.cr
-version: 1.0.0
+name: gitlinker
+version: 0.1.0
+
+authors:
+  - Yukai Huang
+
+targets:
+  gitlinker:
+    main: src/gitlinker.cr
+
+crystal: '>= 1.11.2'
+
+license: MIT
