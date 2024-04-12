@@ -1,8 +1,8 @@
 require "option_parser"
 require "uri"
+require "./src/*"
 
 module Gitlinker
-  VERSION = "1.0.0"
 
   class CLI
     @file : String?
@@ -42,9 +42,16 @@ module Gitlinker
     end
 
     def run
-      if @file
-        url = generate_url(@file, @line, @column)
-        output_url(url)
+      if file = @file
+        linker = Linker.make(file)
+        if linker
+          linker.lstart = @line
+          linker.lend = @line
+          url = Routers.generate_url(linker)
+          output_url(url)
+        else
+          puts "Failed to create linker object."
+        end
       else
         puts "Invalid arguments. Please provide the required options."
         puts "Use --help for more information."
@@ -52,11 +59,7 @@ module Gitlinker
     end
 
     private def generate_url(file, line, column)
-      # Generate the URL based on the provided file, line, and column
-      # The implementation logic for handling branch information and constructing the URL
-      # should be handled within the Gitlinker module.
-      # You can use the Gitlinker module's methods to generate the URL.
-      # Example: Gitlinker.generate_url(file, line, column)
+      Gitlinker.generate_url(file, line, column)
     end
 
     private def output_url(url)
