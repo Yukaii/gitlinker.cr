@@ -1,5 +1,4 @@
 require "option_parser"
-require "uri"
 require "./src/*"
 
 module Gitlinker
