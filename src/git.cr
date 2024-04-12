@@ -21,23 +21,23 @@ module Gitlinker
     end
 
     def get_remotes
-      git_command ["remote"]
+      git_command(["remote"])
     end
 
     def get_remote_url(remote : String)
-      git_command ["remote", "get-url", remote]
+      git_command(["remote", "get-url", remote])
     end
 
     def get_rev_name(rev)
-      git_command ["rev-parse", "--abbrev-ref", rev]
+      git_command(["rev-parse", "--abbrev-ref", rev])
     end
 
     def get_rev(rev)
-      git_command ["rev-parse", rev]
+      git_command(["rev-parse", rev])
     end
 
     def is_file_in_rev(file, revspec)
-      output = git_command ["cat-file", "-e", "#{revspec}:#{file}"]
+      output = git_command(["cat-file", "-e", "#{revspec}:#{file}"])
       !output.nil?
     end
 
@@ -48,14 +48,90 @@ module Gitlinker
     def is_rev_in_remote(revspec, remote)
       raise "remote required" if !remote
 
-      raw_branches = git_command ["branch", "--remotes", "--contains", revspec]
+      raw_branches = git_command(["branch", "--remotes", "--contains", revspec])
 
       if raw_branches.nil?
         return false
       end
 
-      branches = raw_branches.split("\n").map { |i| i.strip }
+      branches = raw_branches.split("\n").map(&.strip)
       branches.any? { |b| Regex.new(remote).match(b) }
+    end
+
+    def has_remote_fetch_config(remote)
+      output = git_command(["config", "remote.#{remote}.fetch"])
+      output && !output.empty?
+    end
+
+    def resolve_host(host)
+      output = git_command(["ssh", "-ttG", host])
+      return host if output.nil?
+
+      stdout_map = output.split("\n").reduce({} of String => String) do |map, item|
+        key, value = item.split(/\s+/, 2)
+        map[key] = value.strip if key && value
+        map
+      end
+
+      stdout_map["hostname"]? || host
+    end
+
+    def get_closest_remote_compatible_rev(remote)
+      raise "remote required" if !remote
+
+      upstream_rev = get_rev("@{u}")
+      return upstream_rev if upstream_rev
+
+      remote_fetch_configured = has_remote_fetch_config(remote)
+
+      if remote_fetch_configured
+        return get_rev("HEAD") if is_rev_in_remote("HEAD", remote)
+      else
+        head_rev = get_rev("HEAD")
+        return head_rev if head_rev
+      end
+
+      if remote_fetch_configured
+        (1..50).each do |i|
+          revspec = "HEAD~#{i}"
+          return get_rev(revspec) if is_rev_in_remote(revspec, remote)
+        end
+      else
+        (1..50).each do |i|
+          revspec = "HEAD~#{i}"
+          rev = get_rev(revspec)
+          return rev if rev
+        end
+      end
+
+      get_rev(remote)
+    end
+
+    def get_branch_remote
+      remotes = get_remotes
+      return nil if remotes.nil?
+
+      return remotes.split("\n").first if remotes.includes?("\n")
+
+      upstream_branch = get_rev_name("@{u}")
+      return nil if !upstream_branch
+
+      upstream_branch_allowed_chars = /[_\-\w\.]+/
+      match_data = upstream_branch.match(/^(#{upstream_branch_allowed_chars})\//)
+      remote_from_upstream_branch = match_data[1] if match_data
+
+      return nil if remote_from_upstream_branch.nil?
+
+      remotes.split("\n").find { |remote| remote == remote_from_upstream_branch }
+    end
+
+    def get_default_branch(remote)
+      output = git_command(["rev-parse", "--abbrev-ref", "#{remote}/HEAD"])
+      output.split("/").last if output
+    end
+
+    def get_current_branch
+      get_rev_name("HEAD")
     end
   end
 end
