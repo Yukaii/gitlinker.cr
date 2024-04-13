@@ -6,7 +6,7 @@ authors:
 
 targets:
   gitlinker:
-    main: src/gitlinker.cr
+    main: gitlinker.cr
 
 crystal: '>= 1.11.2'
 
