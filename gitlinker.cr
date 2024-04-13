@@ -2,6 +2,8 @@ require "option_parser"
 require "./src/*"
 
 module Gitlinker
+  VERSION = "0.1.0"
+
   class CLI
     @file : String?
     @start_line : Int32?
