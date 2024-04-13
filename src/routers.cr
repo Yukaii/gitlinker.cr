@@ -35,23 +35,25 @@ module Gitlinker
     private def self.evaluate_conditionals(url, linker)
       url.gsub(/\{(.*?)\?\s*(.*?)\s*:\s*(.*?)\}/) do |match|
         condition, true_value, false_value = $1, $2, $3
-        if evaluate_condition(condition, linker)
+        result = if evaluate_condition(condition, linker)
           substitute_placeholders(true_value, linker)
         else
-          false_value.match(/^""$/) ? "" : substitute_placeholders(false_value, linker)
+          substitute_placeholders(false_value, linker)
         end
+
+        # unwrap string variable
+        result.match(/^"(.*)"$/) ? $1 : result
       end
     end
 
     private def self.evaluate_condition(condition, linker)
       # Implement a simple condition evaluator
       # Example: "lend > lstart"
-      operator = condition[/(?<=>|<|==)\s*/]
+      operator = condition[/(?:>|<|==)/]
       left, right = condition.split(operator).map(&.strip)
 
       left_value = linker.resolve_key(left)
       right_value = linker.resolve_key(right)
-
       case operator
       when ">"
         compare(left_value, right_value) { |a, b| a > b }

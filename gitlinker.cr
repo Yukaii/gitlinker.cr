@@ -5,8 +5,8 @@ module Gitlinker
 
   class CLI
     @file : String?
-    @line : Int32?
-    @column : Int32?
+    @start_line : Int32?
+    @end_line : Int32?
 
     def initialize
       parse_options
@@ -30,12 +30,12 @@ module Gitlinker
           @file = file
         end
 
-        parser.on "-l LINE", "--line=LINE", "Specify the line number" do |line|
-          @line = line.to_i
+        parser.on "-s LINE", "--start-line=LINE", "Specify the start line number" do |line|
+          @start_line = line.to_i
         end
 
-        parser.on "-c COLUMN", "--column=COLUMN", "Specify the column number" do |column|
-          @column = column.to_i
+        parser.on "-e LINE", "--end-line=LINE", "Specify the end line number" do |line|
+          @end_line = line.to_i
         end
       end
     end
@@ -44,8 +44,8 @@ module Gitlinker
       if file = @file
         linker = Linker.make(file)
         if linker
-          linker.lstart = @line
-          linker.lend = @line
+          linker.lstart = @start_line
+          linker.lend = @end_line
           url = Routers.generate_url(linker)
           output_url(url)
         else
@@ -55,10 +55,6 @@ module Gitlinker
         puts "Invalid arguments. Please provide the required options."
         puts "Use --help for more information."
       end
-    end
-
-    private def generate_url(file, line, column)
-      Gitlinker.generate_url(file, line, column)
     end
 
     private def output_url(url)

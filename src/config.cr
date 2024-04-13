@@ -2,28 +2,28 @@ module Gitlinker
   module Configs
     DEFAULT_ROUTERS = {
       "browse" => {
-        "^github\.com" => "https://github.com/{org}/{repo}/blob/{rev}/{file}#L{lstart}{lend > lstart ? \"-L\#{lend}\" : \"\"}",
-        "^gitlab\.com" => "https://gitlab.com/{org}/{repo}/blob/{rev}/{file}#L{lstart}{lend > lstart ? \"-L\#{lend}\" : \"\"}",
-        "^bitbucket\.org" => "https://bitbucket.org/{org}/{repo}/src/{rev}/{file}#lines-{lstart}{lend > lstart ? \":\#{lend}\" : \"\"}",
-        "^codeberg\.org" => "https://codeberg.org/{org}/{repo}/src/commit/{rev}/{file}#L{lstart}{lend > lstart ? \"-L\#{lend}\" : \"\"}",
+        "^github\.com" => "https://github.com/{org}/{repo}/blob/{rev}/{file}#L{lstart}{lend > lstart ? \"-L\{lend}\" : \"\"}",
+        "^gitlab\.com" => "https://gitlab.com/{org}/{repo}/blob/{rev}/{file}#L{lstart}{lend > lstart ? \"-L\{lend}\" : \"\"}",
+        "^bitbucket\.org" => "https://bitbucket.org/{org}/{repo}/src/{rev}/{file}#lines-{lstart}{lend > lstart ? \":\{lend}\" : \"\"}",
+        "^codeberg\.org" => "https://codeberg.org/{org}/{repo}/src/commit/{rev}/{file}#L{lstart}{lend > lstart ? \"-L\{lend}\" : \"\"}",
       },
       "blame" => {
-        "^github\.com" => "https://github.com/{org}/{repo}/blame/{rev}/{file}#L{lstart}{lend > lstart ? \"-L\#{lend}\" : \"\"}",
-        "^gitlab\.com" => "https://gitlab.com/{org}/{repo}/blame/{rev}/{file}#L{lstart}{lend > lstart ? \"-L\#{lend}\" : \"\"}",
-        "^bitbucket\.org" => "https://bitbucket.org/{org}/{repo}/annotate/{rev}/{file}#lines-{lstart}{lend > lstart ? \":\#{lend}\" : \"\"}",
-        "^codeberg\.org" => "https://codeberg.org/{org}/{repo}/blame/commit/{rev}/{file}#L{lstart}{lend > lstart ? \"-L\#{lend}\" : \"\"}",
+        "^github\.com" => "https://github.com/{org}/{repo}/blame/{rev}/{file}#L{lstart}{lend > lstart ? \"-L\{lend}\" : \"\"}",
+        "^gitlab\.com" => "https://gitlab.com/{org}/{repo}/blame/{rev}/{file}#L{lstart}{lend > lstart ? \"-L\{lend}\" : \"\"}",
+        "^bitbucket\.org" => "https://bitbucket.org/{org}/{repo}/annotate/{rev}/{file}#lines-{lstart}{lend > lstart ? \":\{lend}\" : \"\"}",
+        "^codeberg\.org" => "https://codeberg.org/{org}/{repo}/blame/commit/{rev}/{file}#L{lstart}{lend > lstart ? \"-L\{lend}\" : \"\"}",
       },
       "default_branch" => {
-        "^github\.com" => "https://github.com/{org}/{repo}/blob/{default_branch}/{file}#L{lstart}{lend > lstart ? \"-L\#{lend}\" : \"\"}",
-        "^gitlab\.com" => "https://gitlab.com/{org}/{repo}/blob/{default_branch}/{file}#L{lstart}{lend > lstart ? \"-L\#{lend}\" : \"\"}",
-        "^bitbucket\.org" => "https://bitbucket.org/{org}/{repo}/src/{default_branch}/{file}#lines-{lstart}{lend > lstart ? \":\#{lend}\" : \"\"}",
-        "^codeberg\.org" => "https://codeberg.org/{org}/{repo}/src/branch/{default_branch}/{file}#L{lstart}{lend > lstart ? \"-L\#{lend}\" : \"\"}",
+        "^github\.com" => "https://github.com/{org}/{repo}/blob/{default_branch}/{file}#L{lstart}{lend > lstart ? \"-L\{lend}\" : \"\"}",
+        "^gitlab\.com" => "https://gitlab.com/{org}/{repo}/blob/{default_branch}/{file}#L{lstart}{lend > lstart ? \"-L\{lend}\" : \"\"}",
+        "^bitbucket\.org" => "https://bitbucket.org/{org}/{repo}/src/{default_branch}/{file}#lines-{lstart}{lend > lstart ? \":\{lend}\" : \"\"}",
+        "^codeberg\.org" => "https://codeberg.org/{org}/{repo}/src/branch/{default_branch}/{file}#L{lstart}{lend > lstart ? \"-L\{lend}\" : \"\"}",
       },
       "current_branch" => {
-        "^github\.com" => "https://github.com/{org}/{repo}/blob/{current_branch}/{file}#L{lstart}{lend > lstart ? \"-L\#{lend}\" : \"\"}",
-        "^gitlab\.com" => "https://gitlab.com/{org}/{repo}/blob/{current_branch}/{file}#L{lstart}{lend > lstart ? \"-L\#{lend}\" : \"\"}",
-        "^bitbucket\.org" => "https://bitbucket.org/{org}/{repo}/src/{current_branch}/{file}#lines-{lstart}{lend > lstart ? \":\#{lend}\" : \"\"}",
-        "^codeberg\.org" => "https://codeberg.org/{org}/{repo}/src/branch/{current_branch}/{file}#L{lstart}{lend > lstart ? \"-L\#{lend}\" : \"\"}",
+        "^github\.com" => "https://github.com/{org}/{repo}/blob/{current_branch}/{file}#L{lstart}{lend > lstart ? \"-L\{lend}\" : \"\"}",
+        "^gitlab\.com" => "https://gitlab.com/{org}/{repo}/blob/{current_branch}/{file}#L{lstart}{lend > lstart ? \"-L\{lend}\" : \"\"}",
+        "^bitbucket\.org" => "https://bitbucket.org/{org}/{repo}/src/{current_branch}/{file}#lines-{lstart}{lend > lstart ? \":\{lend}\" : \"\"}",
+        "^codeberg\.org" => "https://codeberg.org/{org}/{repo}/src/branch/{current_branch}/{file}#L{lstart}{lend > lstart ? \"-L\{lend}\" : \"\"}",
       },
     }
 
