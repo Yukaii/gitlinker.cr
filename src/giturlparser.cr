@@ -49,7 +49,7 @@ module Gitlinker
 
       protocol_delimiter_pos = url.index("://")
       if protocol_delimiter_pos
-        protocol, protocol_pos = make(url, 0, protocol_delimiter_pos + 2) # Include the "://" in the protocol
+        protocol, protocol_pos = make(url, 0, protocol_delimiter_pos - 1) # Exclude the trailing ":" from the protocol
 
         user_obj = parse_user(url, protocol_delimiter_pos + 3)
         host_obj = user_obj.host_obj
@@ -138,11 +138,11 @@ module Gitlinker
     end
 
     private def self.trim_slash(val : String, pos : GitUrlPos) : {String, GitUrlPos}
-      if val.starts_with?('/')
+      if val.starts_with?("/")
         val = val[1..]
         pos = pos.copy_with(start_pos: (pos.start_pos || 0) + 1)
       end
-      if val.ends_with?('/')
+      if val.ends_with?("/")
         val = val[0...-1]
         pos = pos.copy_with(end_pos: (pos.end_pos || 0) - 1)
       end
@@ -150,7 +150,7 @@ module Gitlinker
     end
 
     private def self.parse_path(p : String, start : Int32) : GitUrlPath
-      endswith_slash = p.ends_with?('/')
+      endswith_slash = p.ends_with?("/")
 
       org = nil
       org_pos = nil
@@ -160,7 +160,7 @@ module Gitlinker
       path_pos = nil
       plen = p.size
 
-      last_slash_pos = p.rindex('/', endswith_slash ? plen - 1 : plen)
+      last_slash_pos = p.rindex("/", endswith_slash ? plen - 1 : plen)
       if last_slash_pos && last_slash_pos > start && last_slash_pos < plen
         org, org_pos = make(p, start, last_slash_pos - 1)
         repo, repo_pos = make(p, last_slash_pos, plen)
@@ -177,15 +177,14 @@ module Gitlinker
         org, org_pos = trim_slash(org, org_pos)
       end
 
-      # Remove trimming of leading slash from path
       GitUrlPath.new(
-          org: org,
-          org_pos: org_pos,
-          repo: repo,
-          repo_pos: repo_pos,
-          path: p[start..], # Use the original path without trimming the leading slash
-          path_pos: GitUrlPos.new(start_pos: start, end_pos: p.size - 1)
-        )
+        org: org,
+        org_pos: org_pos,
+        repo: repo,
+        repo_pos: repo_pos,
+        path: path,
+        path_pos: path_pos
+      )
     end
 
     private def self.parse_host(p : String, start : Int32) : GitUrlHost
@@ -197,11 +196,11 @@ module Gitlinker
 
       plen = p.size
 
-      first_colon_pos = p.index(':', start)
+      first_colon_pos = p.index(":", start)
       if first_colon_pos && first_colon_pos > start
         host, host_pos = make(p, start, first_colon_pos - 1)
 
-        first_slash_pos = p.index('/', first_colon_pos + 1)
+        first_slash_pos = p.index("/", first_colon_pos + 1)
         if first_slash_pos && first_slash_pos > first_colon_pos + 1
           port, port_pos = make(p, first_colon_pos + 1, first_slash_pos - 1)
           path_obj = parse_path(p, first_slash_pos)
@@ -209,7 +208,7 @@ module Gitlinker
           port, port_pos = make(p, first_colon_pos + 1, plen)
         end
       else
-        first_slash_pos = p.index('/', start)
+        first_slash_pos = p.index("/", start)
         if first_slash_pos && first_slash_pos > start
           host, host_pos = make(p, start, first_slash_pos - 1)
           path_obj = parse_path(p, first_slash_pos)
@@ -232,9 +231,7 @@ module Gitlinker
       host_pos = nil
       port = nil
       port_pos = nil
-      path_obj = GitUrlPath.new(org: nil, org_pos: nil, repo: nil, repo_pos: nil, path: nil, path_pos: nil)
-
-      plen = p.size
+      path_obj = nil
 
       first_colon_pos = p.index(':', start)
       if first_colon_pos && first_colon_pos > start
@@ -264,14 +261,14 @@ module Gitlinker
 
       host_start_pos = start
 
-      first_at_pos = p.index('@', start)
+      first_at_pos = p.index("@", start)
       if first_at_pos
-        first_colon_pos = p.index(':', start)
+        first_colon_pos = p.index(":", start)
         if first_colon_pos && first_colon_pos < first_at_pos
           user, user_pos = make(p, start, first_colon_pos - 1)
           password, password_pos = make(p, first_colon_pos + 1, first_at_pos - 1)
         else
-          user, user_pos = make(p, start, first_at_pos) # Use first_at_pos as the end position for the user
+          user, user_pos = make(p, start, first_at_pos - 1) # Exclude the "@" character from the user
         end
 
         host_start_pos = first_at_pos + 1
