@@ -74,7 +74,7 @@ module Gitlinker
             path: path_obj.path,
             path_pos: path_obj.path_pos
           ),
-          nil
+          nil,
         }
       else
         first_colon_pos = url.index(':')
@@ -102,7 +102,7 @@ module Gitlinker
               path: path_obj.path,
               path_pos: path_obj.path_pos
             ),
-            nil
+            nil,
           }
         else
           path_obj = parse_path(url, 1)
@@ -125,7 +125,7 @@ module Gitlinker
               path: path_obj.path,
               path_pos: path_obj.path_pos
             ),
-            nil
+            nil,
           }
         end
       end

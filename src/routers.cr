@@ -36,10 +36,10 @@ module Gitlinker
       url.gsub(/\{(.*?)\?\s*(.*?)\s*:\s*(.*?)\}/) do |match|
         condition, true_value, false_value = $1, $2, $3
         result = if evaluate_condition(condition, linker)
-          substitute_placeholders(true_value, linker)
-        else
-          substitute_placeholders(false_value, linker)
-        end
+                   substitute_placeholders(true_value, linker)
+                 else
+                   substitute_placeholders(false_value, linker)
+                 end
 
         # unwrap string variable
         result.match(/^"(.*)"$/) ? $1 : result
@@ -80,6 +80,5 @@ module Gitlinker
         preprocess_value(key, linker.resolve_key(key)).to_s
       end
     end
-
   end
 end
