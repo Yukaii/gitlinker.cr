@@ -2,15 +2,13 @@ module Gitlinker
   module Configs
     DEFAULT_ROUTERS = {
       "browse" => {
-        # Example routes for different Git hosting providers
-        "^github.com" => "https://github.com/{ORG}/{REPO}/blob/{REV}/{FILE}#L{LSTART}{LEND}",
-        "^gitlab.com" => "https://gitlab.com/{ORG}/{REPO}/blob/{REV}/{FILE}#L{LSTART}{LEND}",
+        "^github\.com" => "https://github.com/{org}/{repo}/blob/{rev}/{file}#L{lstart}{lend > lstart ? \"-L\#{lend}\" : \"\"}",
+        "^gitlab\.com" => "https://gitlab.com/{org}/{repo}/blob/{rev}/{file}#L{lstart}{lend > lstart ? \"-L\#{lend}\" : \"\"}",
         # Add more browse routes for other Git hosting providers
       },
       "blame" => {
-        # Example routes for different Git hosting providers
-        "^github.com" => "https://github.com/{ORG}/{REPO}/blame/{REV}/{FILE}#L{LSTART}{LEND}",
-        "^gitlab.com" => "https://gitlab.com/{ORG}/{REPO}/blame/{REV}/{FILE}#L{LSTART}{LEND}",
+        "^github\.com" => "https://github.com/{org}/{repo}/blame/{rev}/{file}#L{lstart}{lend > lstart ? \"-L\#{lend}\" : \"\"}",
+        "^gitlab\.com" => "https://gitlab.com/{org}/{repo}/blame/{rev}/{file}#L{lstart}{lend > lstart ? \"-L\#{lend}\" : \"\"}",
         # Add more blame routes for other Git hosting providers
       },
       # Add more router types (e.g., default_branch, current_branch) and their corresponding routes

@@ -81,5 +81,24 @@ module Gitlinker
         current_branch
       )
     end
+
+    def resolve_key(key)
+      case key
+      when "org"
+        org
+      when "repo"
+        repo
+      when "rev"
+        rev
+      when "file"
+        file
+      when "lstart"
+        lstart.try(&.to_i)
+      when "lend"
+        lend.try(&.to_i)
+      else
+        nil
+      end
+    end
   end
 end
