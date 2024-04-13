@@ -1,3 +1,5 @@
+require "uri"
+
 module Gitlinker
   class Linker
     property remote_url : String
@@ -45,9 +47,10 @@ module Gitlinker
       remote_url = Git.get_remote_url(remote)
       return nil unless remote_url
 
-      uri = URI.parse(remote_url)
-      host = uri.host
-      return nil unless host
+      uri, err = GitUrlParser.parse(remote_url)
+      return nil unless uri && uri.host && uri.repo
+      host = uri.host.not_nil!
+      repo = uri.repo.not_nil!
 
       rev = Git.get_closest_remote_compatible_rev(remote)
       return nil unless rev
@@ -64,13 +67,13 @@ module Gitlinker
 
       new(
         remote_url,
-        uri.scheme,
+        uri.protocol,
         uri.user,
         uri.password,
         host,
         uri.port.to_s,
-        uri.path.split("/")[1],
-        uri.path.split("/")[2],
+        uri.org,
+        repo,
         rev,
         file,
         file_changed,
