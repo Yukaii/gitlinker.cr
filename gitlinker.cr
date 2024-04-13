@@ -15,7 +15,14 @@ module Gitlinker
 
     def parse_options
       OptionParser.parse do |parser|
-        parser.banner = "Welcome to Gitlinker!"
+          parser.banner = <<-BANNER
+        Gitlinker is a command-line tool that generates URLs for specific lines of code in a Git repository hosted on various platforms like GitHub, GitLab, Bitbucket, and more.
+
+        Usage:
+          gitlinker [options]
+
+        Options:
+        BANNER
 
         parser.on "-v", "--version", "Show version" do
           puts "Gitlinker version #{VERSION}"

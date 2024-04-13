@@ -9,7 +9,7 @@ Installation
 To install Gitlinker, make sure you have Crystal installed on your system. Then, run the following command:
 
 ```
-crystal build src/gitlinker.cr
+crystal build gitlinker.cr
 ```
 
 This will compile the Gitlinker source code and generate an executable named `gitlinker`.
