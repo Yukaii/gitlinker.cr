@@ -3,13 +3,13 @@ module Gitlinker
     DEFAULT_ROUTERS = {
       "browse" => {
         # Example routes for different Git hosting providers
-        "^github.com" => "https://github.com/{ORG}/{REPO}/blob/{REV}/{FILE}?plain=1#L{LSTART}{LEND}",
+        "^github.com" => "https://github.com/{ORG}/{REPO}/blob/{REV}/{FILE}#L{LSTART}{LEND}",
         "^gitlab.com" => "https://gitlab.com/{ORG}/{REPO}/blob/{REV}/{FILE}#L{LSTART}{LEND}",
         # Add more browse routes for other Git hosting providers
       },
       "blame" => {
         # Example routes for different Git hosting providers
-        "^github.com" => "https://github.com/{ORG}/{REPO}/blame/{REV}/{FILE}?plain=1#L{LSTART}{LEND}",
+        "^github.com" => "https://github.com/{ORG}/{REPO}/blame/{REV}/{FILE}#L{LSTART}{LEND}",
         "^gitlab.com" => "https://gitlab.com/{ORG}/{REPO}/blame/{REV}/{FILE}#L{LSTART}{LEND}",
         # Add more blame routes for other Git hosting providers
       },

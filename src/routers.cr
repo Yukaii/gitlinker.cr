@@ -11,11 +11,19 @@ module Gitlinker
             when "{ORG}"
               linker.org || ""
             when "{REPO}"
-              linker.repo
+              repo = linker.repo
+              if repo.ends_with?(".git")
+                repo = repo[0..-5] # Remove the last 4 characters (".git")
+              end
+              repo
             when "{REV}"
               linker.rev
             when "{FILE}"
-              linker.file
+              file = linker.file
+              if file.ends_with?(".md")
+                file += "?plain=1"
+              end
+              file
             when "{LSTART}"
               linker.lstart ? "#L#{linker.lstart}" : ""
             when "{LEND}"
