@@ -8,7 +8,7 @@ module Gitlinker
         if linker.host.matches?(Regex.new(pattern))
           url = route.gsub(/\{(\w+)\}/) do |match|
             key = match[1..-2]
-            value = linker.resolve_key(key)
+            value = preprocess_value(key, linker.resolve_key(key))
             value.to_s
           end
 
@@ -19,6 +19,17 @@ module Gitlinker
       end
 
       nil
+    end
+
+    private def self.preprocess_value(key, value)
+      case key
+      when "repo"
+        value.as(String).ends_with?(".git") ? value.as(String)[0..-5] : value
+      when "file"
+        value.as(String).ends_with?(/.md/i) ? "#{value}?plain=1" : value
+      else
+        value
+      end
     end
 
     private def self.evaluate_conditionals(url, linker)
@@ -64,7 +75,7 @@ module Gitlinker
     private def self.substitute_placeholders(value, linker)
       value.gsub(/\{(\w+)\}/) do |match|
         key = match[1..-2]
-        linker.resolve_key(key).to_s
+        preprocess_value(key, linker.resolve_key(key)).to_s
       end
     end
 
