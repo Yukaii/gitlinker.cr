@@ -41,6 +41,15 @@ module Gitlinker
       root = Git.get_git_root
       return nil unless root
 
+      # Compose to absolute path first
+      absolute_path = File.expand_path(file_path, cwd)
+
+      # Check if the file exists using the absolute path
+      return nil unless File.exists?(absolute_path)
+
+      # Convert to relative path to project root
+      relative_path = Path[absolute_path].relative_to(root).to_s
+
       remote = Git.get_branch_remote
       return nil unless remote
 
@@ -55,12 +64,12 @@ module Gitlinker
       rev = Git.get_closest_remote_compatible_rev(remote)
       return nil unless rev
 
-      file = URI.encode_path(file_path)
+      file = URI.encode_path(relative_path)
 
-      file_in_rev = Git.is_file_in_rev(file_path, rev)
+      file_in_rev = Git.is_file_in_rev(relative_path, rev)
       return nil unless file_in_rev
 
-      file_changed = Git.file_has_changed(file_path, rev)
+      file_changed = Git.file_has_changed(relative_path, rev)
 
       default_branch = Git.get_default_branch(remote)
       current_branch = Git.get_current_branch
