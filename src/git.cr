@@ -111,18 +111,23 @@ module Gitlinker
       remotes = get_remotes
       return nil if remotes.nil?
 
-      return remotes.split("\n").first if remotes.includes?("\n")
+      remote_list = remotes.split("\n").map(&.strip)
+      # If there is more than one remote, try to determine the one associated with the upstream branch.
+      if remote_list.size > 1
+        upstream_branch = get_rev_name("@{u}")
+        if upstream_branch.nil?
+          # Fall back if no upstream is set (e.g. new branch)
+          return remote_list.first
+        end
 
-      upstream_branch = get_rev_name("@{u}")
-      return nil if !upstream_branch
-
-      upstream_branch_allowed_chars = /[_\-\w\.]+/
-      match_data = upstream_branch.match(/^(#{upstream_branch_allowed_chars})\//)
-      remote_from_upstream_branch = match_data[1] if match_data
-
-      return nil if remote_from_upstream_branch.nil?
-
-      remotes.split("\n").find { |remote| remote == remote_from_upstream_branch }
+        upstream_branch_allowed_chars = /[_\-\w\.]+/
+        match_data = upstream_branch.match(/^(#{upstream_branch_allowed_chars})\//)
+        remote_from_upstream_branch = match_data ? match_data[1] : nil
+        # Fallback to first remote if upstream remote not found.
+        remote_from_upstream_branch || remote_list.first
+      else
+        remote_list.first
+      end
     end
 
     def get_default_branch(remote)
