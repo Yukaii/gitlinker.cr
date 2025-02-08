@@ -104,7 +104,7 @@ module Gitlinker
         end
       end
 
-      get_rev(remote)
+      get_rev("HEAD")
     end
 
     def get_branch_remote
