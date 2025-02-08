@@ -15,6 +15,15 @@ shards build --production --release --no-debug
 
 This will compile the Gitlinker source code and generate an executable named `gitlinker`.
 
+### Homebrew
+
+For Homebrew users, you can tap the repository and install the latest head version:
+
+```bash
+brew tap Yukaii/tap
+brew install --head gitlinker
+```
+
 ## Usage
 
 To use Gitlinker, run the `gitlinker` executable followed by the desired command and options:
@@ -77,3 +86,4 @@ If you find any issues or have suggestions for improvements, please feel free to
 ## License
 
 Gitlinker is open-source software licensed under the [MIT License](https://opensource.org/licenses/MIT).
+
