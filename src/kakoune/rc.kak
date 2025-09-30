@@ -1,6 +1,7 @@
 define-command -hidden gitlinker-perform -params 1..1 -docstring "Gitlinker helper" %{
     evaluate-commands %sh{
-        action="%arg{1}"
+        action_raw="%arg{1}"
+        action=$(printf '%s' "$action_raw" | tr '[:upper:]' '[:lower:]' | tr -d '\r\n')
         selection_desc=$kak_selection_desc
         IFS=',' read -r start_pos end_pos <<< "$selection_desc"
         IFS='.' read -r start_line start_col <<< "$start_pos"
