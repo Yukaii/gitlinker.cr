@@ -5,19 +5,12 @@ module Gitlinker
     extend self
 
     def git_command(args)
-      stdout = IO::Memory.new
-      process = Process.new("git", args, output: stdout, chdir: get_git_root)
-
-      status = process.wait
-      if status.success?
-        stdout.to_s.strip
-      else
-        nil
-      end
+      result = `git -C #{get_git_root} #{args.join(" ")} 2>/dev/null`.strip
+      result.empty? ? nil : result
     end
 
     def get_git_root
-      `git rev-parse --show-toplevel`.strip
+      `git rev-parse --show-toplevel 2>/dev/null`.strip
     end
 
     def get_remotes
@@ -37,12 +30,13 @@ module Gitlinker
     end
 
     def is_file_in_rev(file, revspec)
-      output = git_command(["cat-file", "-e", "#{revspec}:#{file}"])
-      !output.nil?
+      result = `git -C #{get_git_root} cat-file -e #{revspec}:#{file} 2>/dev/null`
+      $?.success?
     end
 
     def file_has_changed(file, rev)
-      !git_command(["diff", rev, "--", file]).nil?
+      output = git_command(["diff", rev, "--", file])
+      !output.nil? && !output.empty?
     end
 
     def is_rev_in_remote(revspec, remote)
@@ -60,20 +54,7 @@ module Gitlinker
 
     def has_remote_fetch_config(remote)
       output = git_command(["config", "remote.#{remote}.fetch"])
-      output && !output.empty?
-    end
-
-    def resolve_host(host)
-      output = git_command(["ssh", "-ttG", host])
-      return host if output.nil?
-
-      stdout_map = output.split("\n").reduce({} of String => String) do |map, item|
-        key, value = item.split(/\s+/, 2)
-        map[key] = value.strip if key && value
-        map
-      end
-
-      stdout_map["hostname"]? || host
+      !output.nil? && !output.empty?
     end
 
     def get_closest_remote_compatible_rev(remote)

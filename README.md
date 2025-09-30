@@ -1,9 +1,6 @@
-# Gitlinker CLI (WIP)
+# Gitlinker CLI
 
-Gitlinker is a command-line tool that generates URLs for specific lines of code in a Git repository hosted on various platforms like GitHub, GitLab, Bitbucket, and more.
-
-> [!WARNING]
-> only GitHub is partially working now. I ask Claude 3 Opus to rewrite the lua code from [linrongbin16](https://github.com/linrongbin16/gitlinker.nvim)'s gitlinker.nvim. Not all the provider were ported and tested.
+Gitlinker is a command-line tool that generates URLs for specific lines of code in a Git repository hosted on various platforms like GitHub, GitLab, Bitbucket, and Codeberg.
 
 ## Installation
 

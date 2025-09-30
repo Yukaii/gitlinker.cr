@@ -55,9 +55,6 @@ describe Gitlinker::Git do
     end
   end
 
-  it "should resolve a host using SSH" do
-    Gitlinker::Git.resolve_host("github.com").should be_a(String)
-  end
 
   it "should get the closest remote-compatible revision" do
     remotes = Gitlinker::Git.get_remotes

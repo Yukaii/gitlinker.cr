@@ -2,34 +2,22 @@ require "uri"
 
 module Gitlinker
   class Linker
-    property remote_url : String
-    property protocol : String?
-    property username : String?
-    property password : String?
     property host : String
-    property port : String?
     property org : String?
     property repo : String
     property rev : String
     property file : String
     property lstart : Int32?
     property lend : Int32?
-    property file_changed : Bool
     property default_branch : String?
     property current_branch : String?
 
     def initialize(
-      @remote_url,
-      @protocol,
-      @username,
-      @password,
       @host,
-      @port,
       @org,
       @repo,
       @rev,
       @file,
-      @file_changed,
       @default_branch,
       @current_branch
     )
@@ -66,26 +54,17 @@ module Gitlinker
 
       file = URI.encode_path(relative_path)
 
-      file_in_rev = Git.is_file_in_rev(relative_path, rev)
-      return nil unless file_in_rev
-
-      file_changed = Git.file_has_changed(relative_path, rev)
+      return nil unless Git.is_file_in_rev(relative_path, rev)
 
       default_branch = Git.get_default_branch(remote)
       current_branch = Git.get_current_branch
 
       new(
-        remote_url,
-        uri.protocol,
-        uri.user,
-        uri.password,
         host,
-        uri.port.to_s,
         uri.org,
         repo,
         rev,
         file,
-        file_changed,
         default_branch,
         current_branch
       )
