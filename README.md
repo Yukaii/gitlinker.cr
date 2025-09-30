@@ -50,25 +50,30 @@ Then use:
 Add the Lua plugin to your config:
 
 ```lua
--- Save the output of `gitlinker init neovim` to a Lua file, or use directly:
-local gitlinker = loadstring(vim.fn.system("gitlinker init neovim"))()
+-- Load gitlinker.cr plugin dynamically
+_G.gitlinker = loadstring(vim.fn.system("gitlinker init neovim"))()
+if _G.gitlinker then
+  _G.gitlinker.setup()
+end
 
--- Basic setup (commands only)
-gitlinker.setup()
+-- Optional: Add keybindings
+vim.keymap.set({ "n", "v" }, "<leader>gy", function() _G.gitlinker.copy() end, { desc = "Copy git permalink" })
+vim.keymap.set({ "n", "v" }, "<leader>go", function() _G.gitlinker.open() end, { desc = "Open git permalink" })
+```
 
--- With keymaps
-gitlinker.setup({
-  mappings = {
-    copy = "<leader>gy",  -- Copy permalink
-    open = "<leader>go",  -- Open in browser
-  }
+Or with which-key:
+
+```lua
+require("which-key").add({
+  { "<leader>gy", function() _G.gitlinker.copy() end, desc = "Copy Git Permalink", mode = { "n", "v", "x" } },
+  { "<leader>go", function() _G.gitlinker.open() end, desc = "Open Git Permalink", mode = { "n", "v", "x" } },
 })
 ```
 
 Then use:
 - `:Gitlinker` - Copy permalink to clipboard
 - `:GitlinkerOpen` - Open permalink in browser
-- Or use the configured keymaps in visual mode
+- Or use the configured keymaps in normal/visual mode
 
 ### Commands
 
