@@ -1,0 +1,135 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    name: Build for ${{ matrix.os }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        include:
+          - os: linux
+            runner: ubuntu-latest
+            target: x86_64-linux-gnu
+          - os: macos
+            runner: macos-latest
+            target: x86_64-darwin
+          - os: macos-arm
+            runner: macos-14
+            target: aarch64-darwin
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Crystal
+        uses: crystal-lang/install-crystal@v1
+        with:
+          crystal: latest
+
+      - name: Cache shards
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/shards
+          key: ${{ runner.os }}-shards-${{ hashFiles('shard.yml') }}
+          restore-keys: ${{ runner.os }}-shards-
+
+      - name: Install shards
+        run: shards install --production
+
+      - name: Build binary
+        run: shards build --production --release --no-debug
+
+      - name: Package binary
+        run: |
+          mkdir -p dist
+          cp bin/gitlinker dist/
+          cd dist
+          tar -czf gitlinker-${{ matrix.target }}.tar.gz gitlinker
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gitlinker-${{ matrix.target }}
+          path: dist/gitlinker-${{ matrix.target }}.tar.gz
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Determine release type
+        id: release_type
+        run: |
+          if [[ $GITHUB_REF == refs/tags/v* ]]; then
+            echo "type=release" >> $GITHUB_OUTPUT
+            echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+            echo "prerelease=false" >> $GITHUB_OUTPUT
+            echo "name=Release ${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          else
+            echo "type=prerelease" >> $GITHUB_OUTPUT
+            echo "tag=nightly-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+            echo "prerelease=true" >> $GITHUB_OUTPUT
+            echo "name=Pre-release (${GITHUB_SHA::7})" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Delete existing pre-release
+        if: steps.release_type.outputs.type == 'prerelease'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Delete the nightly tag and release if they exist
+          gh release delete nightly --yes || true
+          git push origin :refs/tags/nightly || true
+
+      - name: Create/Update nightly tag
+        if: steps.release_type.outputs.type == 'prerelease'
+        run: |
+          git tag -f nightly
+          git push -f origin nightly
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.release_type.outputs.type == 'prerelease' && 'nightly' || steps.release_type.outputs.tag }}
+          name: ${{ steps.release_type.outputs.name }}
+          prerelease: ${{ steps.release_type.outputs.prerelease }}
+          files: artifacts/**/*.tar.gz
+          body: |
+            ${{ steps.release_type.outputs.type == 'prerelease' && 'Automated pre-release build from the latest commit.' || 'Stable release.' }}
+
+            ## Install
+
+            Download the appropriate binary for your platform and extract it:
+
+            ```bash
+            tar -xzf gitlinker-<target>.tar.gz
+            sudo mv gitlinker /usr/local/bin/
+            ```
+
+            ### Platforms
+            - `x86_64-linux-gnu`: Linux (x86_64)
+            - `x86_64-darwin`: macOS (Intel)
+            - `aarch64-darwin`: macOS (Apple Silicon)
+
+            ---
+
+            Commit: ${{ github.sha }}
