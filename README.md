@@ -29,13 +29,46 @@ To use Gitlinker, run the `gitlinker` executable followed by the desired command
 gitlinker command [options]
 ```
 
-For kakoune user, add this to your config
+### Editor Integration
 
-```
+#### Kakoune
+
+Add this to your kakrc:
+
+```kak
 evaluate-commands %sh{
   gitlinker init kakoune
 }
 ```
+
+Then use:
+- `:gitlinker` - Copy permalink to clipboard
+- `:gitlinker-open` - Open permalink in browser
+
+#### Neovim
+
+Add the Lua plugin to your config:
+
+```lua
+-- Save the output of `gitlinker init neovim` to a Lua file, or use directly:
+local gitlinker = loadstring(vim.fn.system("gitlinker init neovim"))()
+
+-- Basic setup (commands only)
+gitlinker.setup()
+
+-- With keymaps
+gitlinker.setup({
+  mappings = {
+    copy = "<leader>gy",  -- Copy permalink
+    open = "<leader>go",  -- Open in browser
+  }
+})
+```
+
+Then use:
+- `:Gitlinker` - Copy permalink to clipboard
+- `:GitlinkerOpen` - Open permalink in browser
+- Or use the configured keymaps in visual mode
 
 ### Commands
 
@@ -64,10 +97,11 @@ To generate a URL for a specific file and line range:
 gitlinker run -f path/to/file.ext -s 10 -e 20
 ```
 
-To print Kakoune definitions:
+To print editor integration code:
 
-```
-gitlinker init kakoune
+```bash
+gitlinker init kakoune  # For Kakoune
+gitlinker init neovim   # For Neovim
 ```
 
 ## Configuration

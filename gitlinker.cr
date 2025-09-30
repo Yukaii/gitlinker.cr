@@ -78,6 +78,10 @@ module Gitlinker
           parser.on("kakoune", "Print Kakoune definitions") do
             @command = :init_kakoune
           end
+
+          parser.on("neovim", "Print Neovim Lua plugin") do
+            @command = :init_neovim
+          end
         end
       end
     end
@@ -102,6 +106,8 @@ module Gitlinker
         @parser.parse(["init", "--help"])
       when :init_kakoune
         puts Kakoune::CONFIG
+      when :init_neovim
+        puts Neovim::CONFIG
       when ""
         puts @parser
       end
