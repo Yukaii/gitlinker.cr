@@ -1,7 +1,16 @@
+declare-option -hidden str gitlinker_action
+
 define-command -hidden gitlinker-perform -params 1..1 -docstring "Gitlinker helper" %{
+    set-option window gitlinker_action %arg{1}
     evaluate-commands %sh{
-        action_raw="%arg{1}"
-        action=$(printf '%s' "$action_raw" | tr '[:upper:]' '[:lower:]' | tr -d '\r\n')
+        action_raw=$kak_opt_gitlinker_action
+        action=$(printf '%s' "$action_raw" | tr '[:upper:]' '[:lower:]')
+        action_trimmed="${action#"${action%%[![:space:]]*}"}"
+        action="${action_trimmed%"${action_trimmed##*[![:space:]]}"}"
+        raw_hex=$(printf '%s' "$action_raw" | od -An -t x1 | tr -d ' \n')
+        norm_hex=$(printf '%s' "$action" | od -An -t x1 | tr -d ' \n')
+        printf 'echo -debug "[gitlinker] raw=%s normalized=%s raw_len=%s norm_len=%s raw_hex=%s norm_hex=%s"\n' \
+            "$action_raw" "$action" "${#action_raw}" "${#action}" "$raw_hex" "$norm_hex"
         selection_desc=$kak_selection_desc
         IFS=',' read -r start_pos end_pos <<< "$selection_desc"
         IFS='.' read -r start_line start_col <<< "$start_pos"
